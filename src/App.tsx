@@ -1,13 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Menu, Globe2 } from 'lucide-react';
 import './App.css';
 import { generateChatResponse } from './geminiService';
+import MessageBubble from './components/MessageBubble';
+import QuickActions from './components/QuickActions';
 
-interface Message {
+export interface Message {
   role: 'user' | 'model';
   content: string;
 }
 
+/**
+ * Main application component for the WC26 Assistant.
+ * Manages chat state, UI orchestration, and interaction with the Gemini API.
+ */
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', content: 'Welcome to the FIFA World Cup 2026! I am your Smart Assistant. I can help you find your seat, translate languages, and answer stadium questions. How can I help you today?' }
@@ -16,20 +22,25 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
+  /**
+   * Automatically scrolls the chat window to the newest message.
+   */
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, scrollToBottom]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  /**
+   * Handles sending a message (either typed or from quick actions).
+   * @param {string} textToSend - The text content to send to the AI.
+   */
+  const handleSend = useCallback(async (textToSend: string) => {
+    if (!textToSend.trim() || isLoading) return;
 
-    const userMessage = input.trim();
-    setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setMessages(prev => [...prev, { role: 'user', content: textToSend }]);
     setIsLoading(true);
 
     const history = messages.slice(1).map(msg => ({
@@ -37,27 +48,23 @@ function App() {
       parts: [{ text: msg.content }]
     }));
 
-    const responseText = await generateChatResponse(userMessage, history);
+    const responseText = await generateChatResponse(textToSend, history);
     
     setMessages(prev => [...prev, { role: 'model', content: responseText }]);
     setIsLoading(false);
-  };
+  }, [isLoading, messages]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const onSendClick = useCallback(() => {
+    handleSend(input);
+    setInput('');
+  }, [input, handleSend]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      onSendClick();
     }
-  };
-
-  const renderMessageContent = (content: string) => {
-    return content.split('\n').map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i !== content.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ));
-  };
+  }, [onSendClick]);
 
   return (
     <div className="app-container">
@@ -70,11 +77,12 @@ function App() {
 
       <div className="chat-container">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`message-wrapper ${msg.role}`}>
-            <div className="message-bubble" aria-live={msg.role === 'model' && idx === messages.length - 1 ? 'polite' : 'off'}>
-              <p>{renderMessageContent(msg.content)}</p>
-            </div>
-          </div>
+          <MessageBubble 
+            key={idx} 
+            role={msg.role} 
+            content={msg.content} 
+            isLatestModelMessage={msg.role === 'model' && idx === messages.length - 1} 
+          />
         ))}
         {isLoading && (
           <div className="typing-indicator" aria-label="Assistant is typing...">
@@ -85,6 +93,11 @@ function App() {
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      <QuickActions 
+        onActionSelect={handleSend} 
+        disabled={isLoading} 
+      />
 
       <div className="input-container">
         <textarea
@@ -98,7 +111,7 @@ function App() {
         />
         <button 
           className="send-button"
-          onClick={handleSend}
+          onClick={onSendClick}
           disabled={!input.trim() || isLoading}
           aria-label="Send message"
         >

@@ -1,0 +1,31 @@
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-main);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.quick-action-btn {
+  background: rgba(30, 215, 96, 0.1);
+  border: 1px solid rgba(30, 215, 96, 0.2);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-action-btn:hover:not(:disabled) {
+  background: rgba(30, 215, 96, 0.2);
+  border-color: rgba(30, 215, 96, 0.4);
+  transform: translateY(-1px);
+}
+
+.quick-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
