@@ -11,6 +11,8 @@ interface Message {
 function App() {
   const [isConfigured, setIsConfigured] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
+  const [baseUrlInput, setBaseUrlInput] = useState('');
+  const [modelInput, setModelInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', content: 'Welcome to the FIFA World Cup 2026! I am your Smart Assistant. I can help you find your seat, translate languages, and answer stadium questions. How can I help you today?' }
   ]);
@@ -29,7 +31,11 @@ function App() {
   const handleSetup = (e: React.FormEvent) => {
     e.preventDefault();
     if (apiKeyInput.trim()) {
-      const success = initializeGemini(apiKeyInput.trim());
+      const success = initializeGemini(
+        apiKeyInput.trim(), 
+        baseUrlInput.trim() || undefined, 
+        modelInput.trim() || undefined
+      );
       if (success) {
         setIsConfigured(true);
       }
@@ -77,23 +83,38 @@ function App() {
         <header className="header">
           <h1><Globe2 size={24} color="var(--primary)" /> WC26 Assistant</h1>
         </header>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center', overflowY: 'auto' }}>
           <KeyRound size={48} color="var(--secondary)" style={{ marginBottom: '1rem' }} />
           <h2 style={{ marginBottom: '1rem' }}>Security Configuration</h2>
-          <p style={{ marginBottom: '2rem', color: 'var(--text-muted)' }}>
-            To securely use the GenAI Smart Assistant without exposing secrets on GitHub Pages, please enter your Gemini API Key below. This key is only stored in your browser's memory for this session.
+          <p style={{ marginBottom: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            To securely use the GenAI Smart Assistant, enter your Gemini API Key below. <br/><br/>
+            <strong>Note:</strong> If you were provided a special hackathon key, it might require a specific Model Name (like <code>gemini-pro</code>) or a custom Base URL proxy.
           </p>
-          <form onSubmit={handleSetup} style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+          <form onSubmit={handleSetup} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '300px' }}>
             <input 
               type="password" 
               className="chat-input" 
-              placeholder="Enter Gemini API Key" 
+              placeholder="API Key (Required)" 
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
               required
             />
-            <button type="submit" className="send-button" style={{ width: 'auto', padding: '0 1rem', borderRadius: '1.5rem' }}>
-              Start
+            <input 
+              type="text" 
+              className="chat-input" 
+              placeholder="Model (Optional, default: gemini-1.5-flash)" 
+              value={modelInput}
+              onChange={(e) => setModelInput(e.target.value)}
+            />
+            <input 
+              type="url" 
+              className="chat-input" 
+              placeholder="Base URL Proxy (Optional)" 
+              value={baseUrlInput}
+              onChange={(e) => setBaseUrlInput(e.target.value)}
+            />
+            <button type="submit" className="send-button" style={{ width: '100%', borderRadius: '1.5rem', marginTop: '0.5rem' }}>
+              Connect
             </button>
           </form>
         </div>
