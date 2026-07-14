@@ -9,30 +9,14 @@ vi.mock('./geminiService', () => ({
 }));
 
 describe('Smart Assistant App', () => {
-  it('renders the configuration screen initially', () => {
+  it('renders the initial welcome message', () => {
     render(<App />);
-    expect(screen.getByText('Security Configuration')).toBeInTheDocument();
-  });
-
-  it('allows user to enter API key and proceed to chat', () => {
-    render(<App />);
-    const input = screen.getByPlaceholderText(/Enter Gemini API Key/i) as HTMLInputElement;
-    const startButton = screen.getByRole('button', { name: /Start/i });
-    
-    fireEvent.change(input, { target: { value: 'fake-api-key' } });
-    fireEvent.click(startButton);
-
     expect(screen.getByText(/Welcome to the FIFA World Cup 2026!/i)).toBeInTheDocument();
   });
 
   it('allows user to send a message in the chat interface', async () => {
     render(<App />);
     
-    // Bypass config
-    const apiKeyInput = screen.getByPlaceholderText(/Enter Gemini API Key/i);
-    fireEvent.change(apiKeyInput, { target: { value: 'fake-api-key' } });
-    fireEvent.click(screen.getByRole('button', { name: /Start/i }));
-
     const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
     const sendButton = screen.getByRole('button', { name: /Send message/i });
 
