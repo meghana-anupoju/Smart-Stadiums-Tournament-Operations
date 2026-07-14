@@ -1,14 +1,17 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 let genAI: GoogleGenerativeAI;
 let model: any;
 
-try {
-  genAI = new GoogleGenerativeAI(API_KEY || '');
-  model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-} catch (error) {
-  console.error('Failed to initialize Gemini API:', error);
+export function initializeGemini(apiKey: string) {
+  try {
+    genAI = new GoogleGenerativeAI(apiKey);
+    model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    return true;
+  } catch (error) {
+    console.error('Failed to initialize Gemini API:', error);
+    return false;
+  }
 }
 
 const SYSTEM_INSTRUCTION = `
@@ -21,7 +24,7 @@ You must also act as a translator when requested.
 
 export async function generateChatResponse(message: string, history: { role: string; parts: { text: string }[] }[]) {
   if (!model) {
-    return 'Error: Gemini API not initialized properly. Please check your API key.';
+    return 'Error: Gemini API not initialized. Please provide your API key first.';
   }
 
   try {
@@ -38,6 +41,6 @@ export async function generateChatResponse(message: string, history: { role: str
     return response.text();
   } catch (error) {
     console.error('Error generating response:', error);
-    return 'Sorry, I am having trouble connecting to the network right now. Please try again later.';
+    return 'Sorry, I am having trouble connecting to the network right now. Please check your API key and try again.';
   }
 }
