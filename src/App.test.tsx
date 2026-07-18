@@ -28,4 +28,27 @@ describe('Smart Assistant App', () => {
     // Check if mock response comes back
     expect(await screen.findByText('This is a mocked GenAI response.')).toBeInTheDocument();
   });
+
+  it('allows user to send a message using Enter key', async () => {
+    render(<App />);
+    
+    const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
+
+    fireEvent.change(chatInput, { target: { value: 'Another test message' } });
+    fireEvent.keyDown(chatInput, { key: 'Enter', code: 'Enter', shiftKey: false });
+
+    expect(await screen.findByText('Another test message')).toBeInTheDocument();
+  });
+
+  it('does not send message on shift+enter', () => {
+    render(<App />);
+    
+    const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
+
+    fireEvent.change(chatInput, { target: { value: 'Multiline\nmessage' } });
+    fireEvent.keyDown(chatInput, { key: 'Enter', code: 'Enter', shiftKey: true });
+
+    // Assuming it doesn't send, the message won't appear as a user message immediately
+    expect(screen.queryByText('Multiline\nmessage')).not.toBeInTheDocument();
+  });
 });

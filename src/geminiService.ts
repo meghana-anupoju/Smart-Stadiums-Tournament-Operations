@@ -14,7 +14,14 @@ You must assist with:
 Be concise, polite, and helpful. Format your responses with clear spacing.
 `;
 
-let genAI: GoogleGenerativeAI | null = null;
+export let genAI: GoogleGenerativeAI | null = null;
+
+/**
+ * Resets the Gemini instance for testing purposes.
+ */
+export function resetGemini() {
+  genAI = null;
+}
 
 /**
  * Initializes the Gemini API using the secure environment variable.
