@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Menu, Globe2 } from 'lucide-react';
 import './App.css';
-import { generateChatResponse } from './geminiService';
+import { generateChatResponse, initializeGemini } from './geminiService';
 import MessageBubble from './components/MessageBubble';
 import QuickActions from './components/QuickActions';
 
@@ -65,6 +65,55 @@ function App() {
       onSendClick();
     }
   }, [onSendClick]);
+
+  const [dynamicKey, setDynamicKey] = useState<string>('');
+  const [needsKey, setNeedsKey] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check if key is available on mount
+    const key = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!key) {
+      setNeedsKey(true);
+    }
+  }, []);
+
+  const handleSetKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (dynamicKey.trim()) {
+      const success = initializeGemini(dynamicKey.trim());
+      if (success) {
+        setNeedsKey(false);
+      } else {
+        alert('Failed to initialize with this key. Please check the console.');
+      }
+    }
+  };
+
+  if (needsKey) {
+    return (
+      <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ padding: '2rem', background: 'var(--bg-secondary)', borderRadius: '12px', textAlign: 'center', maxWidth: '400px' }}>
+          <Globe2 size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+          <h2 style={{ marginBottom: '1rem' }}>Setup Required</h2>
+          <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
+            The Vercel environment variable (VITE_GEMINI_API_KEY) was not found. Please provide your Gemini API key below to continue.
+          </p>
+          <form onSubmit={handleSetKey}>
+            <input 
+              type="password" 
+              placeholder="Enter Gemini API Key..." 
+              value={dynamicKey}
+              onChange={(e) => setDynamicKey(e.target.value)}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-main)', color: 'white', marginBottom: '1rem' }}
+            />
+            <button type="submit" className="send-button" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', justifyContent: 'center' }}>
+              Save Key & Continue
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">

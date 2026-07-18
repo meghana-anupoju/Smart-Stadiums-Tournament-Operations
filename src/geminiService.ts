@@ -24,14 +24,15 @@ export function resetGemini() {
 }
 
 /**
- * Initializes the Gemini API using the secure environment variable.
+ * Initializes the Gemini API using the provided key or secure environment variable.
+ * @param {string} [dynamicKey] - Optional API key provided by the user via UI.
  * @returns {boolean} True if initialized successfully, false otherwise.
  */
-export function initializeGemini(): boolean {
+export function initializeGemini(dynamicKey?: string): boolean {
   try {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = dynamicKey || import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
-      console.warn('VITE_GEMINI_API_KEY is not set in environment variables.');
+      console.warn('VITE_GEMINI_API_KEY is not set in environment variables and no key was provided.');
       return false;
     }
     genAI = new GoogleGenerativeAI(apiKey);

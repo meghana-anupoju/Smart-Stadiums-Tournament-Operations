@@ -9,12 +9,20 @@ vi.mock('./geminiService', () => ({
 }));
 
 describe('Smart Assistant App', () => {
-  it('renders the initial welcome message', () => {
+  it('renders the setup screen if no key is found', () => {
+    vi.stubEnv('VITE_GEMINI_API_KEY', '');
+    render(<App />);
+    expect(screen.getByText(/Setup Required/i)).toBeInTheDocument();
+  });
+
+  it('renders the initial welcome message when key is present', () => {
+    vi.stubEnv('VITE_GEMINI_API_KEY', 'fake-key');
     render(<App />);
     expect(screen.getByText(/Welcome to the FIFA World Cup 2026!/i)).toBeInTheDocument();
   });
 
   it('allows user to send a message in the chat interface', async () => {
+    vi.stubEnv('VITE_GEMINI_API_KEY', 'fake-key');
     render(<App />);
     
     const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
@@ -30,6 +38,7 @@ describe('Smart Assistant App', () => {
   });
 
   it('allows user to send a message using Enter key', async () => {
+    vi.stubEnv('VITE_GEMINI_API_KEY', 'fake-key');
     render(<App />);
     
     const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
@@ -41,6 +50,7 @@ describe('Smart Assistant App', () => {
   });
 
   it('does not send message on shift+enter', () => {
+    vi.stubEnv('VITE_GEMINI_API_KEY', 'fake-key');
     render(<App />);
     
     const chatInput = screen.getByPlaceholderText(/Ask about stadium, food, translation.../i);
