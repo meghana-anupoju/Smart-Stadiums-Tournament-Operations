@@ -67,6 +67,8 @@ function App() {
   }, [onSendClick]);
 
   const [dynamicKey, setDynamicKey] = useState<string>('');
+  const [dynamicModel, setDynamicModel] = useState<string>('gemini-1.5-flash');
+  const [dynamicBaseUrl, setDynamicBaseUrl] = useState<string>('');
   const [needsKey, setNeedsKey] = useState<boolean>(false);
 
   useEffect(() => {
@@ -80,7 +82,11 @@ function App() {
   const handleSetKey = (e: React.FormEvent) => {
     e.preventDefault();
     if (dynamicKey.trim()) {
-      const success = initializeGemini(dynamicKey.trim());
+      const success = initializeGemini(
+        dynamicKey.trim(),
+        dynamicModel.trim() || undefined,
+        dynamicBaseUrl.trim() || undefined
+      );
       if (success) {
         setNeedsKey(false);
       } else {
@@ -104,6 +110,21 @@ function App() {
               placeholder="Enter Gemini API Key..." 
               value={dynamicKey}
               onChange={(e) => setDynamicKey(e.target.value)}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-main)', color: 'white', marginBottom: '1rem' }}
+              required
+            />
+            <input 
+              type="text" 
+              placeholder="Model Name (default: gemini-1.5-flash)" 
+              value={dynamicModel}
+              onChange={(e) => setDynamicModel(e.target.value)}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-main)', color: 'white', marginBottom: '1rem' }}
+            />
+            <input 
+              type="text" 
+              placeholder="Base URL (optional, for custom endpoints)" 
+              value={dynamicBaseUrl}
+              onChange={(e) => setDynamicBaseUrl(e.target.value)}
               style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-main)', color: 'white', marginBottom: '1rem' }}
             />
             <button type="submit" className="send-button" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', justifyContent: 'center' }}>

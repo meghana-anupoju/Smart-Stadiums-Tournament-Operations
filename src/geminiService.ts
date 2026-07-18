@@ -15,26 +15,37 @@ Be concise, polite, and helpful. Format your responses with clear spacing.
 `;
 
 export let genAI: GoogleGenerativeAI | null = null;
+export let activeModelName: string = 'gemini-1.5-flash';
+export let activeBaseUrl: string | undefined = undefined;
 
 /**
  * Resets the Gemini instance for testing purposes.
  */
 export function resetGemini() {
   genAI = null;
+  activeModelName = 'gemini-1.5-flash';
+  activeBaseUrl = undefined;
 }
 
 /**
  * Initializes the Gemini API using the provided key or secure environment variable.
  * @param {string} [dynamicKey] - Optional API key provided by the user via UI.
+ * @param {string} [modelName] - Optional Model Name provided via UI.
+ * @param {string} [baseUrl] - Optional Base URL provided via UI.
  * @returns {boolean} True if initialized successfully, false otherwise.
  */
-export function initializeGemini(dynamicKey?: string): boolean {
+export function initializeGemini(dynamicKey?: string, modelName?: string, baseUrl?: string): boolean {
   try {
     const apiKey = dynamicKey || import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       console.warn('VITE_GEMINI_API_KEY is not set in environment variables and no key was provided.');
       return false;
     }
+    
+    activeModelName = modelName || import.meta.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash';
+    const envBaseUrl = import.meta.env.VITE_GEMINI_BASE_URL;
+    activeBaseUrl = baseUrl || (envBaseUrl ? envBaseUrl : undefined);
+
     genAI = new GoogleGenerativeAI(apiKey);
     return true;
   } catch (error) {
@@ -58,7 +69,8 @@ export async function generateChatResponse(message: string, history: { role: str
   }
 
   try {
-    const model = genAI!.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const requestOptions = activeBaseUrl ? { baseUrl: activeBaseUrl } : undefined;
+    const model = genAI!.getGenerativeModel({ model: activeModelName }, requestOptions);
     const chat = model.startChat({
       history: [
         { role: 'user', parts: [{ text: SYSTEM_INSTRUCTION }] },

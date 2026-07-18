@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/24</span>
+                <span class='fraction'>30/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">78.94% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>8/10</span>
+                <span class='fraction'>15/19</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>22/24</span>
+                <span class='fraction'>30/32</span>
             </div>
         
             
@@ -140,7 +140,19 @@
 <a name='L75'></a><a href='#L75'>75</a>
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
-<a name='L78'></a><a href='#L78'>78</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -157,12 +169,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,8 +195,13 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -201,7 +224,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -209,7 +233,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -234,26 +258,37 @@ Be concise, polite, and helpful. Format your responses with clear spacing.
 `;
 &nbsp;
 export let genAI: GoogleGenerativeAI | null = null;
+export let activeModelName: string = 'gemini-1.5-flash';
+export let activeBaseUrl: string | undefined = undefined;
 &nbsp;
 /**
  * Resets the Gemini instance for testing purposes.
  */
 export function resetGemini() {
   genAI = null;
+  activeModelName = 'gemini-1.5-flash';
+  activeBaseUrl = undefined;
 }
 &nbsp;
 /**
  * Initializes the Gemini API using the provided key or secure environment variable.
  * @param {string} [dynamicKey] - Optional API key provided by the user via UI.
+ * @param {string} [modelName] - Optional Model Name provided via UI.
+ * @param {string} [baseUrl] - Optional Base URL provided via UI.
  * @returns {boolean} True if initialized successfully, false otherwise.
  */
-export function initializeGemini(dynamicKey?: string): boolean {
+export function initializeGemini(dynamicKey?: string, modelName?: string, baseUrl?: string): boolean {
   try {
     const apiKey = dynamicKey || import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       console.warn('VITE_GEMINI_API_KEY is not set in environment variables and no key was provided.');
       return false;
     }
+    
+    activeModelName = modelName || import.meta.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash';
+    const envBaseUrl = import.meta.env.VITE_GEMINI_BASE_URL;
+    activeBaseUrl = baseUrl || (envBaseUrl ? <span class="branch-0 cbranch-no" title="branch not covered" >envBaseUrl : u</span>ndefined);
+&nbsp;
     genAI = new GoogleGenerativeAI(apiKey);
     return true;
   } catch (error) {
@@ -277,7 +312,8 @@ export async function generateChatResponse(message: string, history: { role: str
   }
 &nbsp;
   try {
-    const model = genAI!.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const requestOptions = activeBaseUrl ? <span class="branch-0 cbranch-no" title="branch not covered" >{ baseUrl: activeBaseUrl } : u</span>ndefined;
+    const model = genAI!.getGenerativeModel({ model: activeModelName }, requestOptions);
     const chat = model.startChat({
       history: [
         { role: 'user', parts: [{ text: SYSTEM_INSTRUCTION }] },
@@ -301,7 +337,7 @@ export async function generateChatResponse(message: string, history: { role: str
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-18T08:41:54.617Z
+                at 2026-07-18T08:56:38.928Z
             </div>
         <script src="../prettify.js"></script>
         <script>
